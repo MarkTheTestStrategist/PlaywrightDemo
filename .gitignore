@@ -86,3 +86,19 @@ typings/
 
 # DynamoDB Local files
 .dynamodb/
+
+.vs/PlaywrightDemo/CopilotIndices/17.13.431.34963/CodeChunks.db-shm
+
+*.db-wal
+
+*.db-shm
+
+.vs/PlaywrightDemo/FileContentIndex/0b119dd1-493c-466e-953f-8dad726f83fe.vsidx
+
+.vs/PlaywrightDemo/FileContentIndex/
+
+.vs/
+
+playwright-report/
+
+test-results/
