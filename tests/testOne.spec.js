@@ -1,11 +1,11 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
 
-test('has title', async ({ page }) => {
-	await page.goto(process.env.baseUrl);
+test('has title Dynamic Content', async ({ page }) => {
+	await page.goto("https://the-internet.herokuapp.com/dynamic_content?with_content=static");
 
   // Expect a title "to contain" a substring.
-  await expect(page).toHaveTitle(/Dynamic Content/);
+  await expect(page).toHaveTitle("Dynamic Content");
 });
 
 //test('get started link', async ({ page }) => {
