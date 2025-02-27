@@ -1,0 +1,1 @@
+npx playwright codegen https://the-internet.herokuapp.com/dynamic_content?with_content=static
