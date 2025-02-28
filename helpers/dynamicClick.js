@@ -1,3 +1,5 @@
+import { test, expect } from '@playwright/test';
+
 module.exports = {
     async performClicks(page) {
         // Click on the first set of elements

@@ -1,4 +1,4 @@
-const { urls } = require('../config/urlLibrary');
+const urls = require('../config/urlLibrary');
 
 class Navigate {
     constructor(page) {
