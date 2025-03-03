@@ -1,7 +1,7 @@
 // @ts-nocheck
 import { test, expect } from '@playwright/test';
 const { Navigate } = require('../pages/navigate');
-const { performClicks } = require('../helpers/dynamicClick');
+const { assertTextVisibility } = require('../helpers/dynamicClick');
 
 let navigator; // Declare outside tests
 
@@ -21,5 +21,5 @@ test('Landing page has header text "Dynamic Content', async ({ page }) => {
 
 test('Paragraph texts change except for the first paragraph', async ({ page }) => {
     await navigator.toDashboardPage();
-    await performClicks(page);
+    await assertTextVisibility(page);
 });
