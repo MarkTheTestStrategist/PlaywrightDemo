@@ -1,0 +1,1 @@
+npx playwright show-trace C:\Dev\PlaywrightDemo\playwright-traces\my-test.zip
