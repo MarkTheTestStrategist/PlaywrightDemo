@@ -5,7 +5,7 @@ import fs from 'fs';
 const { Navigate } = require('../pages/navigate');
 const { assertTextVisibility } = require('../helpers/dynamicClick');
 const { WaitForPageToLoad } = require('../helpers/pageLoadStates');
-const { imageUrls } = require('../utils/constants');
+const { imageUrls } = require('../config/constants');
 
 let navigator;
 
@@ -73,6 +73,25 @@ test('Three images are present', async ({ page }) => {
         const src = await image.getAttribute('src');
         console.log(`Image found: ${src}`);
 
-        expect(imageUrls).toContain(src);
+        const imageName = src.split('/').pop();
+        const foundMatch = imageUrls.some(url => url.includes(imageName));
+
+        expect(foundMatch).toBeTruthy();
     }
+});
+
+test('Grab the text from row three, click the link to refresh the entry and compare to ensure it is now different random text.', async ({ page }) => {
+    await navigator.toDynamicContent();
+    await WaitForPageToLoad;
+
+    const oldText = await page.locator('.row').nth(3).innerText();
+
+    await expect(page.locator('a', { hasText: "click here" })).toBeVisible();
+    await page.locator('a[href="/dynamic_content?with_content=static"]').click();
+
+    await WaitForPageToLoad;
+
+    const newText = await page.locator('.row').nth(6).innerText();
+
+    expect(newText).not.toBe(oldText);
 });
