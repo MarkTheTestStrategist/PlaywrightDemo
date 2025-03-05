@@ -102,3 +102,5 @@ typings/
 playwright-report/
 
 test-results/
+
+playwright-traces/
