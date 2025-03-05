@@ -42,24 +42,28 @@ test.afterEach(async ({ page }, testInfo) => {
 });
 
 test('Landing page has title The Internet', async ({ page }) => {
+
     await navigator.toDynamicContent();
     await WaitForPageToLoad;
     await expect(page).toHaveTitle("The Internet");
 });
 
 test('Landing page has header text "Dynamic Content', async ({ page }) => {
+
     await navigator.toDynamicContent();
     await WaitForPageToLoad;
     await expect(page.getByRole('heading', { name: 'Dynamic Content', level: 3 })).toBeVisible();
 });
 
 test('Paragraph text visibility', async ({ page }) => {
+
     await navigator.toDynamicContent();
     await WaitForPageToLoad;
     await assertTextVisibility(page);
 });
 
 test('Three images are present', async ({ page }) => {
+
     await navigator.toDynamicContent();
     await WaitForPageToLoad;
 
@@ -80,18 +84,20 @@ test('Three images are present', async ({ page }) => {
     }
 });
 
-test('Grab the text from row three, click the link to refresh the entry and compare to ensure it is now different random text.', async ({ page }) => {
+test('Validate-TableRow-Text-Entries', async ({ page }, testInfo) => {
+    testInfo.annotations.push({ type: 'description', description: 'Grab the text from row three, click the link to refresh the entry and compare to ensure it is now different random text.' });
+
     await navigator.toDynamicContent();
     await WaitForPageToLoad;
 
-    const oldText = await page.locator('.row').nth(3).innerText();
+    const oldText = await page.locator('.row').nth(5).innerText();
 
     await expect(page.locator('a', { hasText: "click here" })).toBeVisible();
     await page.locator('a[href="/dynamic_content?with_content=static"]').click();
 
     await WaitForPageToLoad;
 
-    const newText = await page.locator('.row').nth(6).innerText();
+    const newText = await page.locator('.row').nth(5).innerText();
 
-    expect(newText).not.toBe(oldText);
+    expect(newText).not.toEqual(oldText);
 });
