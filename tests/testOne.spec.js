@@ -5,6 +5,7 @@ import fs from 'fs';
 const { Navigate } = require('../pages/navigate');
 const { assertTextVisibility } = require('../helpers/dynamicClick');
 const { WaitForPageToLoad } = require('../helpers/pageLoadStates');
+const { imageUrls } = require('../utils/constants');
 
 let navigator;
 
@@ -27,39 +28,51 @@ test.afterEach(async ({ page }, testInfo) => {
         `${testInfo.title}.zip`
     );
 
-    // Ensure trace directory exists
-    if (!fs.existsSync(playwrightTraces)) {
-        fs.mkdirSync(playwrightTraces, { recursive: true });
-    }
+    try {
+        // Ensure trace directory exists
+        if (!fs.existsSync(playwrightTraces)) {
+            fs.mkdirSync(playwrightTraces, { recursive: true });
+        }
 
-    await page.context().tracing.stop({ path: tracePath });
+        await page.context().tracing.stop({ path: tracePath });
+        console.log(`Trace saved to ${tracePath}`);
+    } catch (error) {
+        console.error(`Failed to save trace: ${error.message}`);
+    }
 });
 
 test('Landing page has title The Internet', async ({ page }) => {
     await navigator.toDynamicContent();
+    await WaitForPageToLoad;
     await expect(page).toHaveTitle("The Internet");
 });
 
 test('Landing page has header text "Dynamic Content', async ({ page }) => {
     await navigator.toDynamicContent();
+    await WaitForPageToLoad;
     await expect(page.getByRole('heading', { name: 'Dynamic Content', level: 3 })).toBeVisible();
 });
 
-test('Paragraph text visiblity', async ({ page }) => {
+test('Paragraph text visibility', async ({ page }) => {
     await navigator.toDynamicContent();
+    await WaitForPageToLoad;
     await assertTextVisibility(page);
 });
 
 test('Three images are present', async ({ page }) => {
     await navigator.toDynamicContent();
     await WaitForPageToLoad;
-    await expect(page.getByRole('img', { src = "/img/avatars/Original-Facebook-Geek-Profile-Avatar-7.jpg" }).nth(1)).toBeVisible();
-    await expect(page.getByRole('img', { src = "https://the-internet.herokuapp.com/img/avatars/Original-Facebook-Geek-Profile-Avatar-7.jpg"}).nth(2)).toBeVisible();
-    await expect(page.getByRole('img', {src = ""}).nth(3)).toBeVisible();
-});
 
-test('Images have correct urls', async ({ page }) => {
-    await navigator.toDynamicContent();
-    await page.locator('img[src="/img/avatars/Original-Facebook-Geek-Profile-Avatar-7.jpg"]').toBeVisible;
-    await expect(page).toHaveURL('/img/avatars/Original-Facebook-Geek-Profile-Avatar-7.jpg');
+    const images = await page.locator('#content .row img').all();
+
+    console.log(`Found ${images.length} images`);
+
+    expect(images.length).toBe(3);
+
+    for (const image of images) {
+        const src = await image.getAttribute('src');
+        console.log(`Image found: ${src}`);
+
+        expect(imageUrls).toContain(src);
+    }
 });
