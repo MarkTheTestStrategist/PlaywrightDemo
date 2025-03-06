@@ -9,6 +9,11 @@ const { imageUrls } = require('../config/constants');
 
 let navigator;
 
+async function navigateAndWait(page) {
+    await navigator.toDynamicContent();
+    await WaitForPageToLoad;
+}
+
 test.beforeEach(async ({ page }, testInfo) => {
     navigator = new Navigate(page);
 
@@ -43,30 +48,26 @@ test.afterEach(async ({ page }, testInfo) => {
 
 test('Landing page has title The Internet', async ({ page }) => {
 
-    await navigator.toDynamicContent();
-    await WaitForPageToLoad;
+    await navigateAndWait(page);
     await expect(page).toHaveTitle("The Internet");
 });
 
 test('Landing page has header text "Dynamic Content', async ({ page }) => {
 
-    await navigator.toDynamicContent();
-    await WaitForPageToLoad;
+    await navigateAndWait(page);
     await expect(page.getByRole('heading', { name: 'Dynamic Content', level: 3 })).toBeVisible();
 });
 
 test('Paragraph text visibility', async ({ page }) => {
 
-    await navigator.toDynamicContent();
-    await WaitForPageToLoad;
+    await navigateAndWait(page);
     await assertTextVisibility(page);
 });
 
 test('Three-table-row-images', async ({ page }, testInfo) => {
     testInfo.annotations.push({ type : 'description', description : 'Validate that each of three rows has an image & it is represented by a url'})
 
-    await navigator.toDynamicContent();
-    await WaitForPageToLoad;
+    await navigateAndWait(page);
 
     const images = await page.locator('#content .row img').all();
 
@@ -88,37 +89,33 @@ test('Three-table-row-images', async ({ page }, testInfo) => {
 test('Validate-TableRow-Text-Entries', async ({ page }, testInfo) => {
     testInfo.annotations.push({ type: 'description', description: 'Grab the text from row three, click the link to refresh the entry and compare to ensure it is now different random text.' });
 
-    await navigator.toDynamicContent();
-    await WaitForPageToLoad;
+    await navigateAndWait(page);
 
     const oldText = await page.locator('.row').nth(5).innerText();
-
     await expect(page.locator('a', { hasText: "click here" })).toBeVisible();
     await page.locator('a[href="/dynamic_content?with_content=static"]').click();
 
     await WaitForPageToLoad;
 
     const newText = await page.locator('.row').nth(5).innerText();
-
     expect(newText).not.toEqual(oldText);
 });
 
 test('Powered-By', async ({ page }, testInfo) => {
-    testInfo.annotations.push({ type : 'description', description: 'Validate powered by... is present.'})
-    await expect(page.locator('#page-footer')).toContainText('Powered by Elemental Selenium');
-    await expect(page.getByText('Powered by Elemental Selenium')).toBeVisible();
-    await expect(page.locator('a[href="http://elementalselenium.com/"')).toBeVisible;
+    testInfo.annotations.push({ type: 'description', description: 'Validate powered by... is present.' })
 
-    const seleniumLink = page.locator('a[href="http://elementalselenium.com/"]');
-    await expect(seleniumLink).toBeVisible();
+    await navigateAndWait(page);
 
-    const href = await seleniumLink.getAttribute('href');
-    expect(href).toBe('http://elementalselenium.com/');
+    await expect(page.locator('#page-footer')).toContainText('Powered by');
+    await expect(page.getByText('Powered by')).toBeVisible();
+    await expect(page.locator('a[href="http://elementalselenium.com/"]')).toContainText('Elemental Selenium')
 });
 
 test('Powered-By-link', async ({ page }, testInfo) => {
     testInfo.annotations.push({ type: 'description', description: 'Validate the link is present & correct for Elemental Selenium.' })
- 
+
+    await navigateAndWait(page);
+
     const seleniumLink = page.locator('a[href="http://elementalselenium.com/"]');
     await expect(seleniumLink).toBeVisible();
 
