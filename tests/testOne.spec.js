@@ -62,7 +62,8 @@ test('Paragraph text visibility', async ({ page }) => {
     await assertTextVisibility(page);
 });
 
-test('Three images are present', async ({ page }) => {
+test('Three-table-row-images', async ({ page }, testInfo) => {
+    testInfo.annotations.push({ type : 'description', description : 'Validate that each of three rows has an image & it is represented by a url'})
 
     await navigator.toDynamicContent();
     await WaitForPageToLoad;
@@ -100,4 +101,27 @@ test('Validate-TableRow-Text-Entries', async ({ page }, testInfo) => {
     const newText = await page.locator('.row').nth(5).innerText();
 
     expect(newText).not.toEqual(oldText);
+});
+
+test('Powered-By', async ({ page }, testInfo) => {
+    testInfo.annotations.push({ type : 'description', description: 'Validate powered by... is present.'})
+    await expect(page.locator('#page-footer')).toContainText('Powered by Elemental Selenium');
+    await expect(page.getByText('Powered by Elemental Selenium')).toBeVisible();
+    await expect(page.locator('a[href="http://elementalselenium.com/"')).toBeVisible;
+
+    const seleniumLink = page.locator('a[href="http://elementalselenium.com/"]');
+    await expect(seleniumLink).toBeVisible();
+
+    const href = await seleniumLink.getAttribute('href');
+    expect(href).toBe('http://elementalselenium.com/');
+});
+
+test('Powered-By-link', async ({ page }, testInfo) => {
+    testInfo.annotations.push({ type: 'description', description: 'Validate the link is present & correct for Elemental Selenium.' })
+ 
+    const seleniumLink = page.locator('a[href="http://elementalselenium.com/"]');
+    await expect(seleniumLink).toBeVisible();
+
+    const href = await seleniumLink.getAttribute('href');
+    expect(href).toBe('http://elementalselenium.com/');
 });
