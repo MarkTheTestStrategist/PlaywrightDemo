@@ -48,19 +48,22 @@ test.describe('Test Demo using herokuapp test site.', () => {
         }
     });
 
-    test('Landing page has title The Internet', async ({ page }) => {
+    test('Landing-page-title', async ({ page }, testInfo) => {
+        testInfo.annotations.push({ type: 'description', description: 'The landing page has the tab title "The Internet"' })
 
         await navigateAndWait(page);
         await expect(page).toHaveTitle("The Internet");
     });
 
-    test('Landing page has header text "Dynamic Content', async ({ page }) => {
+    test('Landing-page-header', async ({ page }, testInfo) => {
+        testInfo.annotations.push({ type: 'description', description: 'The landing page has the header 3 title "Dynamic Content"' })
 
         await navigateAndWait(page);
         await expect(page.getByRole('heading', { name: 'Dynamic Content', level: 3 })).toBeVisible();
     });
 
-    test('Paragraph text visibility', async ({ page }) => {
+    test('Paragraph-text-visibility', async ({ page }, testInfo) => {
+        testInfo.annotations.push({ type: 'description', description: 'Validates that the text on the page and that the first two rows have the same text each time.' })
 
         await navigateAndWait(page);
         await assertTextVisibility(page);
@@ -123,5 +126,35 @@ test.describe('Test Demo using herokuapp test site.', () => {
 
         const href = await seleniumLink.getAttribute('href');
         expect(href).toBe('http://elementalselenium.com/');
+    });
+
+    test('Get-long-text-and-refresh', async ({ page }, testInfo) => {
+        testInfo.annotations.push({ type: 'description', description: 'Locate third row, get long text, refresh, then verify new text.' });
+
+        await navigateAndWait(page);
+
+        let oldText = '';
+        let rowElement;
+
+        while (true) {
+            rowElement = page.locator('.row').nth(5);
+            oldText = await rowElement.innerText();
+            if (oldText.length > 50) {
+                console.log(`Found long text: ${oldText}`);
+                break;
+            } else {
+                await page.reload();
+                await WaitForPageToLoad;
+            }
+        }
+
+        await expect(page.locator('a', { hasText: "click here" })).toBeVisible();
+        await page.locator('a[href="/dynamic_content?with_content=static"]').click();
+
+        await WaitForPageToLoad;
+
+        const newText = await page.locator('.row').nth(5).innerText();
+        expect(newText).not.toEqual(oldText);
+        console.log(`New Text: ${newText}`);
     });
 });
